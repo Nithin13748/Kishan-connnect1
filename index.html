@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kisan Connect</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f6f2;--card:#fff;--ink:#1c1c1c;--mute:#6b6b6b;--line:#e6e6e0;--y:#f8cb46;--g:#0c831f;--gl:#eaf6ec;--r:14px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--card:#1d1d1d;--ink:#f1f1f1;--mute:#a5a5a5;--line:#303030;--gl:#12301a}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 'Plus Jakarta Sans','Noto Sans Kannada',system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;padding:0 14px 110px}
+header{background:var(--y);color:#1c1c1c;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+header .in{max-width:960px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.5px}.logo b{color:var(--g)}
+.sp{flex:1}
+.pill{border:1px solid #1c1c1c33;background:#fff8;border-radius:99px;padding:6px 12px;font-weight:600;font-size:13px;color:#1c1c1c}
+.center{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px 0}
+h1{font-size:30px;line-height:1.15;margin:0;font-weight:800;letter-spacing:-.5px}
+h2{font-size:18px;margin:18px 0 10px}
+.mute{color:var(--mute)}
+.opts{display:grid;gap:12px;width:100%;max-width:420px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:18px;text-align:left;display:flex;gap:14px;align-items:center;font-weight:700;font-size:17px}
+.opt:hover{border-color:var(--g)}
+.opt .e{font-size:34px}.opt small{display:block;font-weight:400;color:var(--mute);font-size:13px}
+.btn{background:var(--g);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700}
+.btn.o{background:var(--gl);color:var(--g);border:1px solid var(--g)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0}
+.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 14px;font-weight:600}
+.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+.search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-top:12px}
+.hero{background:linear-gradient(100deg,#0c831f,#2fa24a);color:#fff;border-radius:var(--r);padding:18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.hero b{font-size:20px;display:block}.hero span{font-size:44px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.p{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:4px}
+.p .img{background:var(--gl);border-radius:10px;height:92px;display:flex;align-items:center;justify-content:center;font-size:48px}
+.tag{font-size:11px;background:var(--bg);border-radius:6px;padding:2px 6px;align-self:flex-start;color:var(--mute)}
+.p .n{font-weight:700}.p .f{font-size:12px;color:var(--mute)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;gap:6px;padding-top:6px}
+.add{border:1px solid var(--g);color:var(--g);background:var(--gl);border-radius:8px;padding:6px 16px;font-weight:800}
+.step{display:flex;align-items:center;background:var(--g);color:#fff;border-radius:8px;overflow:hidden}
+.step button{background:none;border:0;color:#fff;padding:6px 10px;font-weight:800}
+.step span{min-width:18px;text-align:center;font-weight:700}
+.cartbar{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));z-index:6}
+.cartbar button{display:flex;width:100%;max-width:560px;margin:0 auto;justify-content:space-between;background:var(--g);color:#fff;border:0;border-radius:14px;padding:14px 18px;font-weight:800;box-shadow:0 6px 20px #0004}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-top:12px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
+label{font-size:12px;color:var(--mute);display:block;margin-bottom:3px}
+input,select{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg)}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border:0}
+.x{background:none;border:0;color:#d33;font-weight:700}
+.modal{position:fixed;inset:0;background:#0008;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+.toast{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:#1c1c1c;color:#fff;padding:12px 16px;border-radius:12px;z-index:30;max-width:92%;box-shadow:0 6px 20px #0006}
+.badge{background:#d33;color:#fff;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700}
+.note{font-size:12px;color:var(--mute);margin-top:14px}
+</style>
+</head>
+<body>
+<header><div class="in"><div class="logo">Kisan<b>Connect</b></div><div class="sp"></div><span id="hbtns"></span></div></header>
+<div class="wrap" id="app"></div>
+<div id="db-status" style="text-align:center;font-size:12px;color:#68736a;padding:8px 12px">Connecting to Firebase…</div>
+<div id="layer"></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDds4_DDc_nlMVq-gSI3abTOLJAYGBG3II",
+  authDomain: "kisanconnect-bfadf.firebaseapp.com",
+  databaseURL: "https://kisanconnect-bfadf-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kisanconnect-bfadf",
+  storageBucket: "kisanconnect-bfadf.firebasestorage.app",
+  messagingSenderId: "445749577119",
+  appId: "1:445749577119:web:733677b5ebb8acd650e9aa",
+  measurementId: "G-031M07FW9J"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+let currentUser = null;
+let authReady = false;
+
+const CAT=[
+{k:'tomato',en:'Tomato',kn:'ಟೊಮೆಟೊ',e:'🍅',c:'veg'},{k:'onion',en:'Onion',kn:'ಈರುಳ್ಳಿ',e:'🧅',c:'veg'},
+{k:'potato',en:'Potato',kn:'ಆಲೂಗಡ್ಡೆ',e:'🥔',c:'veg'},{k:'carrot',en:'Carrot',kn:'ಗಜ್ಜರಿ',e:'🥕',c:'veg'},
+{k:'brinjal',en:'Brinjal',kn:'ಬದನೆಕಾಯಿ',e:'🍆',c:'veg'},{k:'spinach',en:'Spinach',kn:'ಪಾಲಕ್',e:'🥬',c:'veg'},
+{k:'banana',en:'Banana',kn:'ಬಾಳೆಹಣ್ಣು',e:'🍌',c:'fruit'},{k:'mango',en:'Mango',kn:'ಮಾವಿನಹಣ್ಣು',e:'🥭',c:'fruit'},
+{k:'milk',en:'Milk',kn:'ಹಾಲು',e:'🥛',c:'dairy'},{k:'eggs',en:'Eggs',kn:'ಮೊಟ್ಟೆ',e:'🥚',c:'dairy'},
+{k:'rice',en:'Rice',kn:'ಅಕ್ಕಿ',e:'🌾',c:'grain'},{k:'ragi',en:'Ragi',kn:'ರಾಗಿ',e:'🌾',c:'grain'}];
+const UNIT={milk:'L',eggs:'dozen'};
+const T={
+en:{pick:'Choose your language',who:'Who are you?',farmer:'I’m a farmer',farmerS:'Sell your produce directly',cons:'I’m a consumer',consS:'Buy fresh from farms near you',
+tag:'Fresh from the farm, straight to you',all:'All',veg:'Vegetables',fruit:'Fruits',dairy:'Dairy & eggs',grain:'Grains',search:'Search vegetables, fruits…',
+hero:'Farm fresh in minutes',heroS:'No middlemen. Fair prices.',add:'ADD',by:'by',km:'km',left:'left',items:'items',view:'View cart',cart:'Your cart',empty:'Your cart is empty. Add something fresh.',
+name:'Your name',village:'Village / area',dist:'Distance (km)',prod:'Product',qty:'Quantity',price:'Price (₹ per unit)',addP:'Add product',myP:'Your products',noP:'No products yet. Add your first one above.',
+remove:'Remove',orders:'Nearby orders',noO:'No orders yet. New orders appear here.',total:'Total',place:'Place order',addr:'Delivery address',yourN:'Your name',
+done:'Order placed!',notified:'farmer(s) nearby notified',close:'Close',newO:'New order nearby',back:'Switch role',lang:'ಕನ್ನಡ',
+demo:'Demo: data is saved in this browser. Open as a farmer in one tab and as a consumer in another to see alerts live.',need:'Enter name and address.',needP:'Enter name, quantity and price.',ordFrom:'Order from',unit:'unit',ofKm:'within 10 km'},
+kn:{pick:'ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆರಿಸಿ',who:'ನೀವು ಯಾರು?',farmer:'ನಾನು ರೈತ',farmerS:'ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳನ್ನು ನೇರವಾಗಿ ಮಾರಿ',cons:'ನಾನು ಗ್ರಾಹಕ',consS:'ಹತ್ತಿರದ ಫಾರ್ಮ್‌ನಿಂದ ತಾಜಾ ಖರೀದಿಸಿ',
+tag:'ಫಾರ್ಮ್‌ನಿಂದ ನೇರವಾಗಿ ನಿಮಗೆ',all:'ಎಲ್ಲಾ',veg:'ತರಕಾರಿಗಳು',fruit:'ಹಣ್ಣುಗಳು',dairy:'ಹಾಲು ಮತ್ತು ಮೊಟ್ಟೆ',grain:'ಧಾನ್ಯಗಳು',search:'ತರಕಾರಿ, ಹಣ್ಣು ಹುಡುಕಿ…',
+hero:'ನಿಮಿಷಗಳಲ್ಲಿ ತಾಜಾ ಫಾರ್ಮ್ ಉತ್ಪನ್ನ',heroS:'ಮಧ್ಯವರ್ತಿಗಳಿಲ್ಲ. ನ್ಯಾಯಯುತ ಬೆಲೆ.',add:'ಸೇರಿಸಿ',by:'ರೈತ',km:'ಕಿಮೀ',left:'ಲಭ್ಯ',items:'ವಸ್ತುಗಳು',view:'ಕಾರ್ಟ್ ನೋಡಿ',cart:'ನಿಮ್ಮ ಕಾರ್ಟ್',empty:'ಕಾರ್ಟ್ ಖಾಲಿ ಇದೆ. ತಾಜಾ ಉತ್ಪನ್ನ ಸೇರಿಸಿ.',
+name:'ನಿಮ್ಮ ಹೆಸರು',village:'ಗ್ರಾಮ / ಪ್ರದೇಶ',dist:'ದೂರ (ಕಿಮೀ)',prod:'ಉತ್ಪನ್ನ',qty:'ಪ್ರಮಾಣ',price:'ಬೆಲೆ (₹ ಪ್ರತಿ ಯೂನಿಟ್)',addP:'ಉತ್ಪನ್ನ ಸೇರಿಸಿ',myP:'ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳು',noP:'ಇನ್ನೂ ಉತ್ಪನ್ನಗಳಿಲ್ಲ. ಮೇಲೆ ಮೊದಲನೆಯದನ್ನು ಸೇರಿಸಿ.',
+remove:'ತೆಗೆಯಿರಿ',orders:'ಹತ್ತಿರದ ಆರ್ಡರ್‌ಗಳು',noO:'ಇನ್ನೂ ಆರ್ಡರ್‌ಗಳಿಲ್ಲ. ಹೊಸ ಆರ್ಡರ್ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.',total:'ಒಟ್ಟು',place:'ಆರ್ಡರ್ ಮಾಡಿ',addr:'ವಿತರಣಾ ವಿಳಾಸ',yourN:'ನಿಮ್ಮ ಹೆಸರು',
+done:'ಆರ್ಡರ್ ಆಯಿತು!',notified:'ಹತ್ತಿರದ ರೈತರಿಗೆ ಸೂಚನೆ ಕಳುಹಿಸಲಾಗಿದೆ',close:'ಮುಚ್ಚಿ',newO:'ಹತ್ತಿರದಲ್ಲಿ ಹೊಸ ಆರ್ಡರ್',back:'ಪಾತ್ರ ಬದಲಿಸಿ',lang:'English',
+demo:'ಡೆಮೊ: ಡೇಟಾ ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಉಳಿಯುತ್ತದೆ. ಒಂದು ಟ್ಯಾಬ್‌ನಲ್ಲಿ ರೈತ, ಇನ್ನೊಂದರಲ್ಲಿ ಗ್ರಾಹಕರಾಗಿ ತೆರೆದು ಸೂಚನೆ ನೋಡಿ.',need:'ಹೆಸರು ಮತ್ತು ವಿಳಾಸ ನಮೂದಿಸಿ.',needP:'ಹೆಸರು, ಪ್ರಮಾಣ ಮತ್ತು ಬೆಲೆ ನಮೂದಿಸಿ.',ordFrom:'ಆರ್ಡರ್',unit:'ಯೂನಿಟ್',ofKm:'10 ಕಿಮೀ ಒಳಗೆ'}};
+const SEED=[
+{id:'s1',k:'tomato',q:40,p:28,f:'Ramesh Gowda',v:'Kolar',d:4},{id:'s2',k:'onion',q:60,p:32,f:'Lakshmamma',v:'Doddaballapur',d:7},
+{id:'s3',k:'potato',q:50,p:30,f:'Ramesh Gowda',v:'Kolar',d:4},{id:'s4',k:'carrot',q:25,p:45,f:'Suresh Patil',v:'Devanahalli',d:9},
+{id:'s5',k:'spinach',q:15,p:20,f:'Lakshmamma',v:'Doddaballapur',d:7},{id:'s6',k:'banana',q:30,p:48,f:'Mahadevappa',v:'Ramanagara',d:12},
+{id:'s7',k:'milk',q:40,p:56,f:'Suresh Patil',v:'Devanahalli',d:9},{id:'s8',k:'eggs',q:20,p:90,f:'Mahadevappa',v:'Ramanagara',d:12},
+{id:'s9',k:'ragi',q:80,p:65,f:'Lakshmamma',v:'Doddaballapur',d:7},{id:'s10',k:'mango',q:20,p:110,f:'Ramesh Gowda',v:'Kolar',d:4}];
+const S={lang:null,role:null,cat:'all',q:'',cart:{},seen:0};
+const $=id=>document.getElementById(id);
+// Firebase email/password authentication
+function showAuth(message='') {
+  const app=$('app');
+  app.innerHTML=`<div class="center"><div style="font-size:52px">🌾</div><h1>Kisan Connect</h1><p class="mute">Sign in or create an account to continue</p>
+  <div class="panel" style="width:100%;max-width:420px;text-align:left"><div style="margin-bottom:10px"><label>Email</label><input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+  <div style="margin-bottom:12px"><label>Password (at least 6 characters)</label><input id="auth-password" type="password" autocomplete="current-password" placeholder="Password"></div>
+  <div id="auth-message" class="note" style="margin:0 0 10px">${esc(message)}</div>
+  <button class="btn" style="width:100%;margin-bottom:8px" onclick="signIn()">Sign in</button>
+  <button class="btn o" style="width:100%" onclick="signUp()">Create account</button></div>
+  <p class="note">Use your own email and password. Do not share your password.</p></div>`;
+}
+function authError(e){const el=$('auth-message');if(el)el.textContent=(e&&e.message)||'Authentication failed. Please try again.';}
+async function signIn(){try{const email=$('auth-email').value.trim(),password=$('auth-password').value;if(!email||!password)throw new Error('Enter your email and password.');await auth.signInWithEmailAndPassword(email,password);}catch(e){authError(e)}}
+async function signUp(){try{const email=$('auth-email').value.trim(),password=$('auth-password').value;if(!email||!password)throw new Error('Enter your email and password.');if(password.length<6)throw new Error('Password must be at least 6 characters.');await auth.createUserWithEmailAndPassword(email,password);}catch(e){authError(e)}}
+async function signOutUser(){try{await auth.signOut();}catch(e){toast(e.message||'Could not sign out')}}
+auth.onAuthStateChanged(async user=>{currentUser=user;authReady=true;if(!user){showAuth();setDbStatus('Sign in to connect to Firebase');return;}setDbStatus('Signed in · connecting to Firebase…');await loadFirebaseData();render();});
+async function dbUrl(path){if(!currentUser)throw new Error('Please sign in first.');const token=await currentUser.getIdToken();return `${FIREBASE_DB_URL}/kisanConnect/${path}.json?auth=${encodeURIComponent(token)}`;}
+
+// Firebase Realtime Database connection (Kisan Connect)
+const FIREBASE_DB_URL='https://kisanconnect-bfadf-default-rtdb.asia-southeast1.firebasedatabase.app';
+let firebaseReady=false;
+const L=(s)=>{try{return JSON.parse(localStorage.getItem(s))||[]}catch(e){return[]}};
+const W=(s,v)=>{
+  try{localStorage.setItem(s,JSON.stringify(v))}catch(e){}
+  const path=s==='kc_products'?'products':'orders';
+  (async()=>{try{
+    const url=await dbUrl(path);
+    const r=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)});
+    if(!r.ok)throw new Error('Firebase write blocked ('+r.status+')');
+    await r.json();firebaseReady=true;setDbStatus('Connected to Firebase ✓');
+  }catch(err){setDbStatus('Firebase not connected — check database rules and sign-in');console.error(err)}})();
+};
+function setDbStatus(message){const el=$('db-status');if(el)el.textContent=message;}
+async function loadFirebaseData(){
+  try{
+    for(const [key,path] of [['kc_products','products'],['kc_orders','orders']]){
+      const r=await fetch(await dbUrl(path));
+      if(!r.ok)throw new Error('Firebase read blocked ('+r.status+')');
+      const data=await r.json();
+      if(data!==null){localStorage.setItem(key,JSON.stringify(Array.isArray(data)?data:Object.values(data)))}
+      else if(L(key).length){await fetch(await dbUrl(path),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(L(key))});}
+    }
+    firebaseReady=true;setDbStatus('Connected to Firebase ✓');render();
+  }catch(err){setDbStatus('Firebase access blocked. Configure secure Rules/Auth in Firebase.');console.error(err)}
+}
+async function refreshFirebaseData(){
+  try{
+    let changed=false;
+    for(const [key,path] of [['kc_products','products'],['kc_orders','orders']]){
+      const r=await fetch(await dbUrl(path));
+      if(!r.ok)continue;
+      const data=await r.json();
+      if(data!==null){const value=Array.isArray(data)?data:Object.values(data);if(JSON.stringify(value)!==JSON.stringify(L(key))){localStorage.setItem(key,JSON.stringify(value));changed=true}}
+    }
+    if(changed)render();
+  }catch(e){/* keep the app usable offline */}
+}
+const t=k=>T[S.lang][k];
+const nm=k=>{const c=CAT.find(x=>x.k===k)||{};return c[S.lang]||k};
+const info=k=>CAT.find(x=>x.k===k)||{e:'🧺',c:'veg'};
+const unitOf=k=>UNIT[k]||'kg';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const all=()=>SEED.concat(L('kc_products'));
+const myName=()=>{try{return localStorage.getItem('kc_me')||''}catch(e){return''}};
+
+function head(){
+ let h=`<button class="pill" onclick="setLang('${S.lang==='en'?'kn':'en'}')">${S.lang?t('lang'):''}</button>`;
+ if(S.role)h+=` <button class="pill" onclick="S.role=null;render()">${t('back')}</button>`;
+ if(currentUser)h+=` <button class="pill" onclick="signOutUser()">Sign out</button>`;
+ $('hbtns').innerHTML=S.lang?h:'';
+}
+function setLang(l){S.lang=l;document.documentElement.lang=l;render()}
+function render(){if(!authReady||!currentUser){if(authReady&&!currentUser)showAuth();return;}head();const a=$('app');
+ if(!S.lang){a.innerHTML=`<div class="center"><div style="font-size:56px">🌾</div><h1>Kisan Connect<br><span style="font-size:22px">ಕಿಸಾನ್ ಕನೆಕ್ಟ್</span></h1><p class="mute">Choose your language · ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</p>
+ <div class="opts"><button class="opt" onclick="setLang('en')"><span class="e">🇬🇧</span>English</button><button class="opt" onclick="setLang('kn')"><span class="e">ಕ</span>ಕನ್ನಡ</button></div></div>`;return}
+ if(!S.role){a.innerHTML=`<div class="center"><h1>${t('who')}</h1><p class="mute">${t('tag')}</p><div class="opts">
+ <button class="opt" onclick="S.role='farmer';render()"><span class="e">👨‍🌾</span><span>${t('farmer')}<small>${t('farmerS')}</small></span></button>
+ <button class="opt" onclick="S.role='consumer';render()"><span class="e">🛒</span><span>${t('cons')}<small>${t('consS')}</small></span></button></div></div>`;return}
+ S.role==='farmer'?farmer():consumer();
+}
+/* FARMER */
+function farmer(){
+ const me=myName(),mine=L('kc_products').filter(p=>p.f===me||!me);
+ const ords=L('kc_orders');
+ S.seen=ords.length;
+ const opts=CAT.map(c=>`<option value="${c.k}">${c.e} ${c[S.lang]}</option>`).join('');
+ $('app').innerHTML=`<h2>👨‍🌾 ${t('myP')}</h2>
+ <div class="panel"><div class="form">
+ <div><label>${t('name')}</label><input id="fn" value="${esc(me)}"></div>
+ <div><label>${t('village')}</label><input id="fv" value="${esc(localStorage.getItem('kc_v')||'')}"></div>
+ <div><label>${t('dist')}</label><input id="fd" type="number" min="0" value="5"></div>
+ <div><label>${t('prod')}</label><select id="fk">${opts}</select></div>
+ <div><label>${t('qty')}</label><input id="fq" type="number" min="1"></div>
+ <div><label>${t('price')}</label><input id="fp" type="number" min="1"></div>
+ <button class="btn" onclick="addProd()">${t('addP')}</button></div></div>
+ <div class="panel">${mine.length?mine.map(p=>`<div class="li"><span>${info(p.k).e} <b>${nm(p.k)}</b> — ${p.q} ${unitOf(p.k)} · ₹${p.p}/${unitOf(p.k)}</span><button class="x" onclick="rmProd('${p.id}')">${t('remove')}</button></div>`).join(''):`<p class="mute">${t('noP')}</p>`}</div>
+ <h2>🔔 ${t('orders')} <span class="mute" style="font-size:13px;font-weight:400">(${t('ofKm')})</span></h2>
+ <div class="panel">${ords.length?ords.slice().reverse().map(o=>`<div class="li" style="align-items:flex-start"><span><b>${t('ordFrom')} ${esc(o.n)}</b><br><span class="mute">${esc(o.a)}</span><br>${o.items.map(i=>`${info(i.k).e} ${nm(i.k)} × ${i.n}`).join(', ')}</span><b>₹${o.t}</b></div>`).join(''):`<p class="mute">${t('noO')}</p>`}</div>
+ <p class="note">${t('demo')}</p>`;
+}
+function addProd(){
+ const n=$('fn').value.trim(),q=+$('fq').value,p=+$('fp').value;
+ if(!n||q<=0||p<=0){toast(t('needP'));return}
+ try{localStorage.setItem('kc_me',n);localStorage.setItem('kc_v',$('fv').value)}catch(e){}
+ const a=L('kc_products');a.push({id:'u'+Date.now(),k:$('fk').value,q,p,f:n,v:$('fv').value.trim()||'—',d:+$('fd').value||5});
+ W('kc_products',a);render();
+}
+function rmProd(id){W('kc_products',L('kc_products').filter(p=>p.id!==id));render()}
+/* CONSUMER */
+function consumer(){
+ const cats=['all','veg','fruit','dairy','grain'];
+ $('app').innerHTML=`<input class="search" id="sq" placeholder="${t('search')}" value="${esc(S.q)}" oninput="S.q=this.value;grid()">
+ <div class="hero"><div><b>${t('hero')}</b>${t('heroS')}</div><span>🥬</span></div>
+ <div class="chips">${cats.map(c=>`<button class="chip ${S.cat===c?'on':''}" onclick="S.cat='${c}';render()">${t(c)}</button>`).join('')}</div>
+ <div class="grid" id="grid"></div><div id="bar"></div>`;
+ grid();
+}
+function grid(){
+ const q=S.q.toLowerCase();
+ const list=all().filter(p=>p.q>0&&(S.cat==='all'||info(p.k).c===S.cat)&&(!q||nm(p.k).toLowerCase().includes(q)||p.k.includes(q)));
+ $('grid').innerHTML=list.map(p=>{const n=S.cart[p.id]||0;return`<div class="p"><div class="img">${info(p.k).e}</div><span class="tag">${p.d} ${t('km')}</span>
+ <div class="n">${nm(p.k)}</div><div class="f">${t('by')} ${esc(p.f)} · ${p.q} ${unitOf(p.k)} ${t('left')}</div>
+ <div class="row"><b>₹${p.p}<small class="mute">/${unitOf(p.k)}</small></b>${n?`<div class="step"><button onclick="chg('${p.id}',-1)">−</button><span>${n}</span><button onclick="chg('${p.id}',1)">+</button></div>`:`<button class="add" onclick="chg('${p.id}',1)">${t('add')}</button>`}</div></div>`}).join('');
+ bar();
+}
+function chg(id,d){const p=all().find(x=>x.id===id);const n=Math.max(0,Math.min(p.q,(S.cart[id]||0)+d));n?S.cart[id]=n:delete S.cart[id];
+ if($('grid'))grid();if($('modal'))cartView()}
+function tot(){let c=0,s=0;all().forEach(p=>{const n=S.cart[p.id]||0;c+=n;s+=n*p.p});return[c,s]}
+function bar(){const[c,s]=tot();$('bar').innerHTML=c?`<div class="cartbar"><button onclick="cartView()"><span>${c} ${t('items')} · ₹${s}</span><span>${t('view')} ›</span></button></div>`:''}
+function cartView(){
+ const[c,s]=tot();const ps=all().filter(p=>S.cart[p.id]);
+ $('layer').innerHTML=`<div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="sheet"><h2 style="margin-top:0">${t('cart')}</h2>
+ ${ps.length?ps.map(p=>`<div class="li"><span>${info(p.k).e} <b>${nm(p.k)}</b><br><small class="mute">${esc(p.f)} · ₹${p.p}/${unitOf(p.k)}</small></span><span class="step"><button onclick="chg('${p.id}',-1)">−</button><span>${S.cart[p.id]}</span><button onclick="chg('${p.id}',1)">+</button></span><b>₹${p.p*S.cart[p.id]}</b></div>`).join('')+
+ `<div class="li"><b>${t('total')}</b><b>₹${s}</b></div>
+ <div class="form" style="margin:10px 0"><div><label>${t('yourN')}</label><input id="cn"></div><div><label>${t('addr')}</label><input id="ca"></div></div>
+ <button class="btn" style="width:100%;padding:14px" onclick="order()">${t('place')} · ₹${s}</button>`:`<p class="mute">${t('empty')}</p>`}
+ <button class="btn o" style="width:100%;margin-top:10px" onclick="closeM()">${t('close')}</button></div></div>`;
+}
+function closeM(){$('layer').innerHTML='';if($('grid'))grid()}
+function order(){
+ const n=$('cn').value.trim(),a=$('ca').value.trim();if(!n||!a){toast(t('need'));return}
+ const ps=all().filter(p=>S.cart[p.id]);
+ const farmers=[...new Set(ps.filter(p=>p.d<=10).map(p=>p.f))];
+ const o={id:Date.now(),n,a,t:tot()[1],items:ps.map(p=>({k:p.k,n:S.cart[p.id],f:p.f}))};
+ const os=L('kc_orders');os.push(o);W('kc_orders',os);
+ const mp=L('kc_products');mp.forEach(p=>{if(S.cart[p.id])p.q-=S.cart[p.id]});W('kc_products',mp);
+ S.cart={};
+ $('layer').innerHTML=`<div class="modal"><div class="sheet" style="text-align:center"><div style="font-size:60px">✅</div><h1>${t('done')}</h1>
+ <p>🔔 ${farmers.length||1} ${t('notified')}:<br><b>${esc(farmers.join(', '))}</b></p><button class="btn" style="width:100%" onclick="closeM()">${t('close')}</button></div></div>`;
+ grid();
+}
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),4000)}
+window.addEventListener('storage',e=>{
+ if(e.key==='kc_orders'&&S.role==='farmer'){const o=L('kc_orders').slice(-1)[0];if(o)toast('🔔 '+t('newO')+': '+o.n+' · ₹'+o.t);render()}
+ if(e.key==='kc_products'&&S.role==='consumer'&&!$('modal'))grid();
+});
+setInterval(()=>{if(currentUser)refreshFirebaseData()},5000);
+</script>
+</body>
+</html>
