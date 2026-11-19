@@ -70,6 +70,7 @@ input,select{width:100%;padding:10px;border-radius:9px;border:1px solid var(--li
 <div id="layer"></div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDds4_DDc_nlMVq-gSI3abTOLJAYGBG3II",
@@ -81,98 +82,367 @@ const firebaseConfig = {
   appId: "1:445749577119:web:733677b5ebb8acd650e9aa",
   measurementId: "G-031M07FW9J"
 };
+// ==========================================
+// KISAN CONNECT - FIREBASE CONFIGURATION
+// ==========================================
+
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
+const db = firebase.database();
+
+const productsRef = db.ref("kisanConnect/products");
+const ordersRef = db.ref("kisanConnect/orders");
+
 let currentUser = null;
 let authReady = false;
+let firebaseReady = false;
 
-const CAT=[
-{k:'tomato',en:'Tomato',kn:'ಟೊಮೆಟೊ',e:'🍅',c:'veg'},{k:'onion',en:'Onion',kn:'ಈರುಳ್ಳಿ',e:'🧅',c:'veg'},
-{k:'potato',en:'Potato',kn:'ಆಲೂಗಡ್ಡೆ',e:'🥔',c:'veg'},{k:'carrot',en:'Carrot',kn:'ಗಜ್ಜರಿ',e:'🥕',c:'veg'},
-{k:'brinjal',en:'Brinjal',kn:'ಬದನೆಕಾಯಿ',e:'🍆',c:'veg'},{k:'spinach',en:'Spinach',kn:'ಪಾಲಕ್',e:'🥬',c:'veg'},
-{k:'banana',en:'Banana',kn:'ಬಾಳೆಹಣ್ಣು',e:'🍌',c:'fruit'},{k:'mango',en:'Mango',kn:'ಮಾವಿನಹಣ್ಣು',e:'🥭',c:'fruit'},
-{k:'milk',en:'Milk',kn:'ಹಾಲು',e:'🥛',c:'dairy'},{k:'eggs',en:'Eggs',kn:'ಮೊಟ್ಟೆ',e:'🥚',c:'dairy'},
-{k:'rice',en:'Rice',kn:'ಅಕ್ಕಿ',e:'🌾',c:'grain'},{k:'ragi',en:'Ragi',kn:'ರಾಗಿ',e:'🌾',c:'grain'}];
-const UNIT={milk:'L',eggs:'dozen'};
-const T={
-en:{pick:'Choose your language',who:'Who are you?',farmer:'I’m a farmer',farmerS:'Sell your produce directly',cons:'I’m a consumer',consS:'Buy fresh from farms near you',
-tag:'Fresh from the farm, straight to you',all:'All',veg:'Vegetables',fruit:'Fruits',dairy:'Dairy & eggs',grain:'Grains',search:'Search vegetables, fruits…',
-hero:'Farm fresh in minutes',heroS:'No middlemen. Fair prices.',add:'ADD',by:'by',km:'km',left:'left',items:'items',view:'View cart',cart:'Your cart',empty:'Your cart is empty. Add something fresh.',
-name:'Your name',village:'Village / area',dist:'Distance (km)',prod:'Product',qty:'Quantity',price:'Price (₹ per unit)',addP:'Add product',myP:'Your products',noP:'No products yet. Add your first one above.',
-remove:'Remove',orders:'Nearby orders',noO:'No orders yet. New orders appear here.',total:'Total',place:'Place order',addr:'Delivery address',yourN:'Your name',
-done:'Order placed!',notified:'farmer(s) nearby notified',close:'Close',newO:'New order nearby',back:'Switch role',lang:'ಕನ್ನಡ',
-demo:'Demo: data is saved in this browser. Open as a farmer in one tab and as a consumer in another to see alerts live.',need:'Enter name and address.',needP:'Enter name, quantity and price.',ordFrom:'Order from',unit:'unit',ofKm:'within 10 km'},
-kn:{pick:'ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆರಿಸಿ',who:'ನೀವು ಯಾರು?',farmer:'ನಾನು ರೈತ',farmerS:'ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳನ್ನು ನೇರವಾಗಿ ಮಾರಿ',cons:'ನಾನು ಗ್ರಾಹಕ',consS:'ಹತ್ತಿರದ ಫಾರ್ಮ್‌ನಿಂದ ತಾಜಾ ಖರೀದಿಸಿ',
-tag:'ಫಾರ್ಮ್‌ನಿಂದ ನೇರವಾಗಿ ನಿಮಗೆ',all:'ಎಲ್ಲಾ',veg:'ತರಕಾರಿಗಳು',fruit:'ಹಣ್ಣುಗಳು',dairy:'ಹಾಲು ಮತ್ತು ಮೊಟ್ಟೆ',grain:'ಧಾನ್ಯಗಳು',search:'ತರಕಾರಿ, ಹಣ್ಣು ಹುಡುಕಿ…',
-hero:'ನಿಮಿಷಗಳಲ್ಲಿ ತಾಜಾ ಫಾರ್ಮ್ ಉತ್ಪನ್ನ',heroS:'ಮಧ್ಯವರ್ತಿಗಳಿಲ್ಲ. ನ್ಯಾಯಯುತ ಬೆಲೆ.',add:'ಸೇರಿಸಿ',by:'ರೈತ',km:'ಕಿಮೀ',left:'ಲಭ್ಯ',items:'ವಸ್ತುಗಳು',view:'ಕಾರ್ಟ್ ನೋಡಿ',cart:'ನಿಮ್ಮ ಕಾರ್ಟ್',empty:'ಕಾರ್ಟ್ ಖಾಲಿ ಇದೆ. ತಾಜಾ ಉತ್ಪನ್ನ ಸೇರಿಸಿ.',
-name:'ನಿಮ್ಮ ಹೆಸರು',village:'ಗ್ರಾಮ / ಪ್ರದೇಶ',dist:'ದೂರ (ಕಿಮೀ)',prod:'ಉತ್ಪನ್ನ',qty:'ಪ್ರಮಾಣ',price:'ಬೆಲೆ (₹ ಪ್ರತಿ ಯೂನಿಟ್)',addP:'ಉತ್ಪನ್ನ ಸೇರಿಸಿ',myP:'ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳು',noP:'ಇನ್ನೂ ಉತ್ಪನ್ನಗಳಿಲ್ಲ. ಮೇಲೆ ಮೊದಲನೆಯದನ್ನು ಸೇರಿಸಿ.',
-remove:'ತೆಗೆಯಿರಿ',orders:'ಹತ್ತಿರದ ಆರ್ಡರ್‌ಗಳು',noO:'ಇನ್ನೂ ಆರ್ಡರ್‌ಗಳಿಲ್ಲ. ಹೊಸ ಆರ್ಡರ್ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.',total:'ಒಟ್ಟು',place:'ಆರ್ಡರ್ ಮಾಡಿ',addr:'ವಿತರಣಾ ವಿಳಾಸ',yourN:'ನಿಮ್ಮ ಹೆಸರು',
-done:'ಆರ್ಡರ್ ಆಯಿತು!',notified:'ಹತ್ತಿರದ ರೈತರಿಗೆ ಸೂಚನೆ ಕಳುಹಿಸಲಾಗಿದೆ',close:'ಮುಚ್ಚಿ',newO:'ಹತ್ತಿರದಲ್ಲಿ ಹೊಸ ಆರ್ಡರ್',back:'ಪಾತ್ರ ಬದಲಿಸಿ',lang:'English',
-demo:'ಡೆಮೊ: ಡೇಟಾ ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಉಳಿಯುತ್ತದೆ. ಒಂದು ಟ್ಯಾಬ್‌ನಲ್ಲಿ ರೈತ, ಇನ್ನೊಂದರಲ್ಲಿ ಗ್ರಾಹಕರಾಗಿ ತೆರೆದು ಸೂಚನೆ ನೋಡಿ.',need:'ಹೆಸರು ಮತ್ತು ವಿಳಾಸ ನಮೂದಿಸಿ.',needP:'ಹೆಸರು, ಪ್ರಮಾಣ ಮತ್ತು ಬೆಲೆ ನಮೂದಿಸಿ.',ordFrom:'ಆರ್ಡರ್',unit:'ಯೂನಿಟ್',ofKm:'10 ಕಿಮೀ ಒಳಗೆ'}};
-const SEED=[
-{id:'s1',k:'tomato',q:40,p:28,f:'Ramesh Gowda',v:'Kolar',d:4},{id:'s2',k:'onion',q:60,p:32,f:'Lakshmamma',v:'Doddaballapur',d:7},
-{id:'s3',k:'potato',q:50,p:30,f:'Ramesh Gowda',v:'Kolar',d:4},{id:'s4',k:'carrot',q:25,p:45,f:'Suresh Patil',v:'Devanahalli',d:9},
-{id:'s5',k:'spinach',q:15,p:20,f:'Lakshmamma',v:'Doddaballapur',d:7},{id:'s6',k:'banana',q:30,p:48,f:'Mahadevappa',v:'Ramanagara',d:12},
-{id:'s7',k:'milk',q:40,p:56,f:'Suresh Patil',v:'Devanahalli',d:9},{id:'s8',k:'eggs',q:20,p:90,f:'Mahadevappa',v:'Ramanagara',d:12},
-{id:'s9',k:'ragi',q:80,p:65,f:'Lakshmamma',v:'Doddaballapur',d:7},{id:'s10',k:'mango',q:20,p:110,f:'Ramesh Gowda',v:'Kolar',d:4}];
-const S={lang:null,role:null,cat:'all',q:'',cart:{},seen:0};
-const $=id=>document.getElementById(id);
-// Firebase email/password authentication
-function showAuth(message='') {
-  const app=$('app');
-  app.innerHTML=`<div class="center"><div style="font-size:52px">🌾</div><h1>Kisan Connect</h1><p class="mute">Sign in or create an account to continue</p>
-  <div class="panel" style="width:100%;max-width:420px;text-align:left"><div style="margin-bottom:10px"><label>Email</label><input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com"></div>
-  <div style="margin-bottom:12px"><label>Password (at least 6 characters)</label><input id="auth-password" type="password" autocomplete="current-password" placeholder="Password"></div>
-  <div id="auth-message" class="note" style="margin:0 0 10px">${esc(message)}</div>
-  <button class="btn" style="width:100%;margin-bottom:8px" onclick="signIn()">Sign in</button>
-  <button class="btn o" style="width:100%" onclick="signUp()">Create account</button></div>
-  <p class="note">Use your own email and password. Do not share your password.</p></div>`;
-}
-function authError(e){const el=$('auth-message');if(el)el.textContent=(e&&e.message)||'Authentication failed. Please try again.';}
-async function signIn(){try{const email=$('auth-email').value.trim(),password=$('auth-password').value;if(!email||!password)throw new Error('Enter your email and password.');await auth.signInWithEmailAndPassword(email,password);}catch(e){authError(e)}}
-async function signUp(){try{const email=$('auth-email').value.trim(),password=$('auth-password').value;if(!email||!password)throw new Error('Enter your email and password.');if(password.length<6)throw new Error('Password must be at least 6 characters.');await auth.createUserWithEmailAndPassword(email,password);}catch(e){authError(e)}}
-async function signOutUser(){try{await auth.signOut();}catch(e){toast(e.message||'Could not sign out')}}
-auth.onAuthStateChanged(async user=>{currentUser=user;authReady=true;if(!user){showAuth();setDbStatus('Sign in to connect to Firebase');return;}setDbStatus('Signed in · connecting to Firebase…');await loadFirebaseData();render();});
-async function dbUrl(path){if(!currentUser)throw new Error('Please sign in first.');const token=await currentUser.getIdToken();return `${FIREBASE_DB_URL}/kisanConnect/${path}.json?auth=${encodeURIComponent(token)}`;}
+// Central Firebase data
+let productsCache = [];
+let ordersCache = [];
 
-// Firebase Realtime Database connection (Kisan Connect)
-const FIREBASE_DB_URL='https://kisanconnect-bfadf-default-rtdb.asia-southeast1.firebasedatabase.app';
-let firebaseReady=false;
-const L=(s)=>{try{return JSON.parse(localStorage.getItem(s))||[]}catch(e){return[]}};
-const W=(s,v)=>{
-  try{localStorage.setItem(s,JSON.stringify(v))}catch(e){}
-  const path=s==='kc_products'?'products':'orders';
-  (async()=>{try{
-    const url=await dbUrl(path);
-    const r=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)});
-    if(!r.ok)throw new Error('Firebase write blocked ('+r.status+')');
-    await r.json();firebaseReady=true;setDbStatus('Connected to Firebase ✓');
-  }catch(err){setDbStatus('Firebase not connected — check database rules and sign-in');console.error(err)}})();
+// ==========================================
+// LOCAL USER SETTINGS
+// ==========================================
+
+const L = key => {
+    if (key === "kc_products") return productsCache;
+    if (key === "kc_orders") return ordersCache;
+
+    try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    } catch {
+        return [];
+    }
 };
-function setDbStatus(message){const el=$('db-status');if(el)el.textContent=message;}
-async function loadFirebaseData(){
-  try{
-    for(const [key,path] of [['kc_products','products'],['kc_orders','orders']]){
-      const r=await fetch(await dbUrl(path));
-      if(!r.ok)throw new Error('Firebase read blocked ('+r.status+')');
-      const data=await r.json();
-      if(data!==null){localStorage.setItem(key,JSON.stringify(Array.isArray(data)?data:Object.values(data)))}
-      else if(L(key).length){await fetch(await dbUrl(path),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(L(key))});}
+
+// ==========================================
+// FIREBASE DATABASE STATUS
+// ==========================================
+
+function setDbStatus(message) {
+    const el = document.getElementById("db-status");
+
+    if (el) {
+        el.textContent = message;
     }
-    firebaseReady=true;setDbStatus('Connected to Firebase ✓');render();
-  }catch(err){setDbStatus('Firebase access blocked. Configure secure Rules/Auth in Firebase.');console.error(err)}
 }
-async function refreshFirebaseData(){
-  try{
-    let changed=false;
-    for(const [key,path] of [['kc_products','products'],['kc_orders','orders']]){
-      const r=await fetch(await dbUrl(path));
-      if(!r.ok)continue;
-      const data=await r.json();
-      if(data!==null){const value=Array.isArray(data)?data:Object.values(data);if(JSON.stringify(value)!==JSON.stringify(L(key))){localStorage.setItem(key,JSON.stringify(value));changed=true}}
+
+// ==========================================
+// SAVE DATA TO FIREBASE
+// ==========================================
+
+async function W(key, value) {
+
+    if (!currentUser) {
+        throw new Error("Please sign in first.");
     }
-    if(changed)render();
-  }catch(e){/* keep the app usable offline */}
+
+    const ref = key === "kc_products"
+        ? productsRef
+        : ordersRef;
+
+    try {
+
+        await ref.set(value);
+
+        if (key === "kc_products") {
+            productsCache = value;
+        } else {
+            ordersCache = value;
+        }
+
+        localStorage.setItem(key, JSON.stringify(value));
+
+        firebaseReady = true;
+
+        setDbStatus("Connected to Firebase ✓");
+
+        return true;
+
+    } catch (error) {
+
+        console.error("Firebase save error:", error);
+
+        setDbStatus("Firebase save failed");
+
+        toast("Unable to save data: " + error.message);
+
+        throw error;
+    }
+}
+
+// ==========================================
+// LOAD AND SYNCHRONIZE FIREBASE DATA
+// ==========================================
+
+async function loadFirebaseData() {
+
+    try {
+
+        setDbStatus("Loading Firebase data...");
+
+        // Load products
+        const productSnapshot = await productsRef.once("value");
+
+        const productData = productSnapshot.val();
+
+        if (productData !== null) {
+
+            productsCache = Array.isArray(productData)
+                ? productData
+                : Object.values(productData);
+
+        } else {
+
+            productsCache = [];
+        }
+
+        // Load orders
+        const orderSnapshot = await ordersRef.once("value");
+
+        const orderData = orderSnapshot.val();
+
+        if (orderData !== null) {
+
+            ordersCache = Array.isArray(orderData)
+                ? orderData
+                : Object.values(orderData);
+
+        } else {
+
+            ordersCache = [];
+        }
+
+        localStorage.setItem(
+            "kc_products",
+            JSON.stringify(productsCache)
+        );
+
+        localStorage.setItem(
+            "kc_orders",
+            JSON.stringify(ordersCache)
+        );
+
+        firebaseReady = true;
+
+        setDbStatus("Connected to Firebase ✓");
+
+        // Start real-time synchronization
+        startRealtimeSync();
+
+    } catch (error) {
+
+        console.error("Firebase loading error:", error);
+
+        firebaseReady = false;
+
+        setDbStatus("Firebase connection failed");
+
+        toast("Database connection failed");
+    }
+}
+
+// ==========================================
+// REAL-TIME SYNCHRONIZATION
+// ==========================================
+
+function startRealtimeSync() {
+
+    // Listen for product changes
+    productsRef.on("value", snapshot => {
+
+        const data = snapshot.val();
+
+        productsCache = data
+            ? (Array.isArray(data) ? data : Object.values(data))
+            : [];
+
+        localStorage.setItem(
+            "kc_products",
+            JSON.stringify(productsCache)
+        );
+
+        firebaseReady = true;
+
+        setDbStatus("Connected · Live synchronization ✓");
+
+        if (S.role === "consumer") {
+            grid();
+        }
+
+        if (S.role === "farmer") {
+            farmer();
+        }
+
+    }, error => {
+
+        console.error("Product listener error:", error);
+
+    });
+
+
+    // Listen for new orders
+    ordersRef.on("value", snapshot => {
+
+        const data = snapshot.val();
+
+        const updatedOrders = data
+            ? (Array.isArray(data) ? data : Object.values(data))
+            : [];
+
+        const previousCount = ordersCache.length;
+
+        ordersCache = updatedOrders;
+
+        localStorage.setItem(
+            "kc_orders",
+            JSON.stringify(ordersCache)
+        );
+
+        // Notify farmer about newly received orders
+        if (
+            S.role === "farmer" &&
+            updatedOrders.length > previousCount
+        ) {
+
+            const newOrders = updatedOrders.slice(previousCount);
+
+            newOrders.forEach(order => {
+
+                toast(
+                    "🔔 NEW ORDER! " +
+                    order.n +
+                    " · ₹" +
+                    order.t
+                );
+
+            });
+        }
+
+        if (S.role === "farmer") {
+            farmer();
+        }
+
+    }, error => {
+
+        console.error("Order listener error:", error);
+
+    });
+}
+
+// ==========================================
+// FIREBASE AUTHENTICATION
+// ==========================================
+
+auth.onAuthStateChanged(async user => {
+
+    currentUser = user;
+    authReady = true;
+
+    if (!user) {
+
+        firebaseReady = false;
+
+        showAuth();
+
+        setDbStatus("Please sign in");
+
+        return;
+    }
+
+    setDbStatus("Signed in · Connecting...");
+
+    await loadFirebaseData();
+
+    render();
+
+});
+
+
+// ==========================================
+// SIGN IN
+// ==========================================
+
+async function signIn() {
+
+    try {
+
+        const email = $("auth-email").value.trim();
+        const password = $("auth-password").value;
+
+        if (!email || !password) {
+            throw new Error("Enter email and password.");
+        }
+
+        await auth.signInWithEmailAndPassword(
+            email,
+            password
+        );
+
+    } catch (error) {
+
+        authError(error);
+
+    }
+}
+
+
+// ==========================================
+// SIGN UP
+// ==========================================
+
+async function signUp() {
+
+    try {
+
+        const email = $("auth-email").value.trim();
+        const password = $("auth-password").value;
+
+        if (!email || !password) {
+            throw new Error("Enter email and password.");
+        }
+
+        if (password.length < 6) {
+            throw new Error("Password must contain 6 characters.");
+        }
+
+        await auth.createUserWithEmailAndPassword(
+            email,
+            password
+        );
+
+    } catch (error) {
+
+        authError(error);
+
+    }
+}
+
+
+// ==========================================
+// SIGN OUT
+// ==========================================
+
+async function signOutUser() {
+
+    try {
+
+        // Remove Firebase listeners
+        productsRef.off();
+        ordersRef.off();
+
+        await auth.signOut();
+
+        S.role = null;
+        S.lang = null;
+
+    } catch (error) {
+
+        toast(error.message);
+
+    }
 }
 const t=k=>T[S.lang][k];
 const nm=k=>{const c=CAT.find(x=>x.k===k)||{};return c[S.lang]||k};
